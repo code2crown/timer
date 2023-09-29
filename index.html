@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+}
+
+.timer-container {
+    text-align: center;
+}
+
+.timer {
+    font-size: 20rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+    </style>
+    <title>Countdown Timer</title>
+</head>
+<body>
+    <div class="timer-container">
+        <div class="timer">
+            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+        </div>
+        <div class="controls">
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="resume">Resume</button>
+        </div>
+    </div>
+    <script>
+        let countdown;
+let timerRunning = false;
+let endTime;
+
+const hoursDisplay = document.getElementById('hours');
+const minutesDisplay = document.getElementById('minutes');
+const secondsDisplay = document.getElementById('seconds');
+const startButton = document.getElementById('start');
+const pauseButton = document.getElementById('pause');
+const resumeButton = document.getElementById('resume');
+
+function startTimer(hours, minutes, seconds) {
+    if (!timerRunning) {
+        const now = Date.now();
+        endTime = now + hours * 3600000 + minutes * 60000 + seconds * 1000;
+        displayTimeLeft((endTime - now) / 1000);
+
+        countdown = setInterval(() => {
+            const millisecondsLeft = Math.max(0, endTime - Date.now());
+            displayTimeLeft(millisecondsLeft / 1000);
+
+            if (millisecondsLeft === 0) {
+                clearInterval(countdown);
+                timerRunning = false;
+            }
+        }, 1000);
+
+        timerRunning = true;
+    }
+}
+
+function displayTimeLeft(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    hoursDisplay.textContent = hours.toString().padStart(2, '0');
+    minutesDisplay.textContent = minutes.toString().padStart(2, '0');
+    secondsDisplay.textContent = seconds.toString().padStart(2, '0');
+}
+
+startButton.addEventListener('click', () => {
+    const hours = parseInt(prompt('Enter hours:'), 10) || 0;
+    const minutes = parseInt(prompt('Enter minutes:'), 10) || 0;
+    const seconds = parseInt(prompt('Enter seconds:'), 10) || 0;
+    startTimer(hours, minutes, seconds);
+});
+
+pauseButton.addEventListener('click', () => {
+    clearInterval(countdown);
+    timerRunning = false;
+});
+
+resumeButton.addEventListener('click', () => {
+    if (!timerRunning) {
+        const currentMillisecondsLeft = Math.max(0, endTime - Date.now());
+        const currentHours = Math.floor(currentMillisecondsLeft / 3600000);
+        const currentMinutes = Math.floor((currentMillisecondsLeft % 3600000) / 60000);
+        const currentSeconds = Math.floor((currentMillisecondsLeft % 60000) / 1000);
+        startTimer(currentHours, currentMinutes, currentSeconds);
+    }
+});
+
+    </script>
+</body>
+</html>
